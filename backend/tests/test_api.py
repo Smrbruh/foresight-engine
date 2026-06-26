@@ -1,7 +1,8 @@
 import pytest
+from httpx import ASGITransport, AsyncClient
+
 from app.core.database import Base, engine
 from app.main import app
-from httpx import ASGITransport, AsyncClient
 
 
 @pytest.mark.asyncio
@@ -24,7 +25,7 @@ async def test_metrics_list():
 async def test_agents_list():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    
+
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
         response = await client.get("/api/v1/agents/")
     assert response.status_code == 200

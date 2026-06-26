@@ -2,9 +2,17 @@
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
 testpaths = ["tests"]
+
 [tool.ruff]
 line-length = 100
 target-version = "py312"
+
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "UP"]
-ignore = ["E501"]
+ignore = [
+    "E501",  # line too long (уже контролируется line-length)
+]
+
+[tool.ruff.format]
+indent-style = "space"
+quote-style = "double"
