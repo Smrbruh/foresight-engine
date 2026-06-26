@@ -1,3 +1,4 @@
+import asyncio
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -8,7 +9,6 @@ from app.api.v1.router import api_router
 from app.core.config import settings
 from app.core.database import Base, engine
 from app.core.logging import setup_logging
-import asyncio
 
 setup_logging()
 
@@ -29,7 +29,7 @@ app = FastAPI(
 )
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.allowed_origins,
+    allow_origins=settings.ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
