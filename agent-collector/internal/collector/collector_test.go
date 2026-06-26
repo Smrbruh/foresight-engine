@@ -1,9 +1,11 @@
 package collector
+
 import (
 	"context"
 	"testing"
 	"time"
 )
+
 func TestCollectorCollect(t *testing.T) {
 	c := New(1)
 	metrics := c.collect()

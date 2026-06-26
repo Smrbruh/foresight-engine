@@ -1,14 +1,17 @@
 package config
+
 import (
 	"os"
 	"strconv"
 )
+
 type Config struct {
 	RedisURL           string
 	PostgresDSN        string
 	CollectionInterval int
 	LogLevel           string
 }
+
 func Load() *Config {
 	interval := 60
 	if v := os.Getenv("COLLECTION_INTERVAL"); v != "" {

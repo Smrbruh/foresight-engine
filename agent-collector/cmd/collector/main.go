@@ -1,15 +1,17 @@
 package main
+
 import (
 	"context"
-	"os"
-	"os/signal"
-	"syscall"
 	"github.com/foresight-engine/agent-collector/internal/collector"
 	"github.com/foresight-engine/agent-collector/internal/config"
 	"github.com/foresight-engine/agent-collector/internal/publisher"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"os"
+	"os/signal"
+	"syscall"
 )
+
 func main() {
 	cfg := config.Load()
 	level, _ := zerolog.ParseLevel(cfg.LogLevel)

@@ -1,4 +1,5 @@
 package publisher
+
 import (
 	"context"
 	"encoding/json"
@@ -6,10 +7,13 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/rs/zerolog/log"
 )
+
 const metricsChannel = "foresight:metrics"
+
 type Publisher struct {
 	client *redis.Client
 }
+
 func New(redisURL string) (*Publisher, error) {
 	opts, err := redis.ParseURL(redisURL)
 	if err != nil {

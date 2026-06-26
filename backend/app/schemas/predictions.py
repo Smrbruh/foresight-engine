@@ -1,6 +1,6 @@
 import enum
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any
 
 from pydantic import BaseModel
 
@@ -16,7 +16,7 @@ class PredictionRequest(BaseModel):
     agent_id: int
     model_type: str
     horizon_hours: int = 24
-    parameters: Dict[str, Any] | None = None
+    parameters: dict[str, Any] | None = None  # ← Dict → dict
 
 
 class PredictionResponse(BaseModel):
@@ -25,7 +25,7 @@ class PredictionResponse(BaseModel):
     model_type: str
     horizon_hours: int
     status: PredictionStatus
-    result: Dict[str, Any] | None = None
+    result: dict[str, Any] | None = None  # ← Dict → dict
     created_at: datetime
     completed_at: datetime | None = None
 

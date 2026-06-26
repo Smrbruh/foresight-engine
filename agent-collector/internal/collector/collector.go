@@ -1,13 +1,15 @@
 package collector
+
 import (
 	"context"
-	"time"
 	"github.com/rs/zerolog/log"
 	"github.com/shirou/gopsutil/v3/cpu"
 	"github.com/shirou/gopsutil/v3/disk"
 	"github.com/shirou/gopsutil/v3/mem"
 	"github.com/shirou/gopsutil/v3/net"
+	"time"
 )
+
 type Metric struct {
 	Type      string            `json:"type"`
 	Value     float64           `json:"value"`
@@ -17,6 +19,7 @@ type Metric struct {
 type Collector struct {
 	interval time.Duration
 }
+
 func New(intervalSeconds int) *Collector {
 	return &Collector{interval: time.Duration(intervalSeconds) * time.Second}
 }

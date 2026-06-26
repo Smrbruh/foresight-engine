@@ -1,6 +1,6 @@
 import enum
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any
 
 from pydantic import BaseModel
 
@@ -16,14 +16,14 @@ class AgentCreate(BaseModel):
     type: str
     description: str | None = None
     status: AgentStatus = AgentStatus.ACTIVE
-    config: Dict[str, Any] | None = None
+    config: dict[str, Any] | None = None  # ← Dict → dict
 
 
 class AgentUpdate(BaseModel):
     name: str | None = None
     description: str | None = None
     status: AgentStatus | None = None
-    config: Dict[str, Any] | None = None
+    config: dict[str, Any] | None = None  # ← Dict → dict
 
 
 class AgentResponse(BaseModel):
@@ -32,7 +32,7 @@ class AgentResponse(BaseModel):
     type: str
     description: str | None = None
     status: AgentStatus
-    config: Dict[str, Any] | None = None
+    config: dict[str, Any] | None = None  # ← Dict → dict
     last_seen: datetime | None = None
     created_at: datetime
 

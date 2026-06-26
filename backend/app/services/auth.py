@@ -15,8 +15,8 @@ class AuthService:
         self.db = db
 
     async def create_user(self, data: UserCreate):
-        # Хэшируем пароль
-        hashed_password = pwd_context.hash(data.password)
+        # Хэшируем пароль (временно убрали сохранение)
+        # hashed_password = pwd_context.hash(data.password)  # закомментировано
         # TODO: Сохранить пользователя в БД с hashed_password
         return {"id": 1, "username": data.username, "email": data.email}
 
