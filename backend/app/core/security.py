@@ -67,7 +67,7 @@ class XSSProtectionMiddleware(BaseHTTPMiddleware):
                                 f"Potential XSS attack detected from {request.client.host}"
                             )
                             raise HTTPException(status_code=400, detail="Invalid request")
-                except:
+                except Exception:  # ← Исправлено: Exception вместо bare except
                     pass
         return await call_next(request)
 
