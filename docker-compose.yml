@@ -1,0 +1,148 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - foresight-net
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - foresight-net
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
+      SECRET_KEY: ${SECRET_KEY}
+      DEBUG: ${DEBUG}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
+      LOG_LEVEL: ${LOG_LEVEL}
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+      - backend_logs:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - foresight-net
+  agent-collector:
+    build:
+      context: ./agent-collector
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/1
+      POSTGRES_DSN: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      COLLECTION_INTERVAL: ${COLLECTION_INTERVAL}
+      LOG_LEVEL: ${LOG_LEVEL}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - agent_logs:/var/log/agent-collector
+    networks:
+      - foresight-net
+  celery-worker:
+    build:
+      context: ./celery-worker
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
+      CELERY_BROKER_URL: redis://:${REDIS_PASSWORD}@redis:6379/2
+      CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD}@redis:6379/3
+      LOG_LEVEL: ${LOG_LEVEL}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - celery_logs:/app/logs
+    networks:
+      - foresight-net
+  celery-beat:
+    build:
+      context: ./celery-worker
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    command: celery -A app.celery_app beat --loglevel=${LOG_LEVEL}
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
+      CELERY_BROKER_URL: redis://:${REDIS_PASSWORD}@redis:6379/2
+      CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD}@redis:6379/3
+      LOG_LEVEL: ${LOG_LEVEL}
+    depends_on:
+      - celery-worker
+    networks:
+      - foresight-net
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL}
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - backend
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - frontend_logs:/var/log/nginx
+    networks:
+      - foresight-net
+volumes:
+  postgres_data:
+  redis_data:
+  backend_logs:
+  agent_logs:
+  celery_logs:
+  frontend_logs:
+networks:
+  foresight-net:
+    driver: bridge

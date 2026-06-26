@@ -1,0 +1,68 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+*.log
+*.pid
+*.seed
+*.pid.lock
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+
+# Node / Frontend
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dist/
+build/
+.cache/
+.vite/
+.env.local
+.env.*.local
+
+# Docker
+*.pid
+docker-compose.override.yml
+.dockerignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Secrets
+.env
+.env.*
+*.pem
+*.key
+*.crt
+
+# Logs
+logs/
+*.log
+
+# OS
+Thumbs.db
+desktop.ini
+
+# Project specific
+*.db
+*.sqlite
+*.sqlite3
