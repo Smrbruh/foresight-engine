@@ -1,25 +1,22 @@
+import json
 import logging
 import sys
 from datetime import datetime
-from typing import Any, Dict
-import json
+from typing import Any
 
 
 def setup_logging():
     """Настройка логирования"""
     logging.basicConfig(
         level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
         handlers=[
             logging.StreamHandler(sys.stdout),
         ]
     )
     
-    # Настройка логгера для SQLAlchemy
     logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
     logging.getLogger("sqlalchemy.pool").setLevel(logging.WARNING)
-    
-    # Настройка логгера для Uvicorn
     logging.getLogger("uvicorn").setLevel(logging.INFO)
     logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
 
@@ -48,12 +45,13 @@ class SecurityLogger:
             "timestamp": datetime.utcnow().isoformat()
         }))
     
-    def log_security_event(self, event_type: str, details: Dict[str, Any]):
+    def log_security_event(self, event_type: str, details: dict[str, Any]):
         self.logger.warning(json.dumps({
             "event": "security_event",
             "type": event_type,
             "details": details,
             "timestamp": datetime.utcnow().isoformat()
         }))
+
 
 security_logger = SecurityLogger()
