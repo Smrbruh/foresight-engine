@@ -1,5 +1,5 @@
 from pydantic_settings import BaseSettings
-from typing import List
+
 
 class Settings(BaseSettings):
     DATABASE_URL: str
@@ -11,12 +11,13 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
 
     @property
-    def ALLOWED_ORIGINS(self) -> List[str]:
+    def allowed_origins(self) -> list[str]:
         return ["http://localhost", "http://127.0.0.1", "http://0.0.0.0", "*"]
 
     class Config:
         env_file = ".env"
         case_sensitive = True
         extra = "ignore"
+
 
 settings = Settings()

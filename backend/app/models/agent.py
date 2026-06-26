@@ -1,12 +1,16 @@
-from sqlalchemy import Column, Integer, String, DateTime, JSON, Enum
-from sqlalchemy.sql import func
-from app.core.database import Base
 import enum
 
-class AgentStatus(str, enum.Enum):
+from sqlalchemy import JSON, Column, DateTime, Enum, Integer, String
+from sqlalchemy.sql import func
+
+from app.core.database import Base
+
+
+class AgentStatus(enum.StrEnum):
     ACTIVE = "active"
     INACTIVE = "inactive"
     ERROR = "error"
+
 
 class Agent(Base):
     __tablename__ = "agents"

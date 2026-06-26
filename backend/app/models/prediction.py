@@ -1,17 +1,21 @@
-from sqlalchemy import Column, Integer, String, DateTime, JSON, Enum
-from sqlalchemy.sql import func
-from app.core.database import Base
 import enum
 
-class PredictionStatus(str, enum.Enum):
+from sqlalchemy import JSON, Column, DateTime, Enum, Integer, String
+from sqlalchemy.sql import func
+
+from app.core.database import Base
+
+
+class PredictionStatus(enum.StrEnum):
     PENDING = "pending"
     PROCESSING = "processing"
     COMPLETED = "completed"
     FAILED = "failed"
 
+
 class Prediction(Base):
     __tablename__ = "predictions"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     agent_id = Column(Integer, nullable=False)
     model_type = Column(String, nullable=False)

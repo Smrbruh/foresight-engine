@@ -1,34 +1,39 @@
-from pydantic import BaseModel
+import enum
 from datetime import datetime
-from typing import Optional, Dict, Any
-from enum import Enum
+from typing import Any, Dict
 
-class AgentStatus(str, Enum):
+from pydantic import BaseModel
+
+
+class AgentStatus(enum.StrEnum):
     ACTIVE = "active"
     INACTIVE = "inactive"
     ERROR = "error"
 
+
 class AgentCreate(BaseModel):
     name: str
     type: str
-    description: Optional[str] = None
+    description: str | None = None
     status: AgentStatus = AgentStatus.ACTIVE
-    config: Optional[Dict[str, Any]] = None
+    config: Dict[str, Any] | None = None
+
 
 class AgentUpdate(BaseModel):
-    name: Optional[str] = None
-    description: Optional[str] = None
-    status: Optional[AgentStatus] = None
-    config: Optional[Dict[str, Any]] = None
+    name: str | None = None
+    description: str | None = None
+    status: AgentStatus | None = None
+    config: Dict[str, Any] | None = None
+
 
 class AgentResponse(BaseModel):
     id: int
     name: str
     type: str
-    description: Optional[str] = None
+    description: str | None = None
     status: AgentStatus
-    config: Optional[Dict[str, Any]] = None
-    last_seen: Optional[datetime] = None
+    config: Dict[str, Any] | None = None
+    last_seen: datetime | None = None
     created_at: datetime
 
     class Config:
